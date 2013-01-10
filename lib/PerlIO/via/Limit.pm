@@ -56,7 +56,8 @@ sub _check {
     if( 0 <= $over ){
         $obj->{reached} = 1;
         $obj->is_over_limit;
-        $$ref_buf = substr( $$ref_buf, 0, CORE::length($$ref_buf) - $over );
+        #$$ref_buf = substr( $$ref_buf, 0, CORE::length($$ref_buf) - $over );
+        substr($$ref_buf, -$over, $over, q{});
     }
 }
 
