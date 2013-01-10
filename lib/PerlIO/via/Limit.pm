@@ -1,6 +1,7 @@
 package PerlIO::via::Limit;
 
 use strict;
+use warnings;
 use vars qw($VERSION);
 $VERSION = '0.01';
 
@@ -32,7 +33,7 @@ sub FILL {
     return undef if( $obj->is_over_limit );
 
     my $buf = <$fh>;
-    $obj->{current} += length $buf;
+    $obj->{current} += CORE::length $buf;
     $obj->_check(\$buf)
         if( defined $buf and defined $max_length );
     return $buf;
@@ -42,11 +43,11 @@ sub WRITE {
     my ($obj, $buf, $fh) = @_;
     return undef if( $obj->is_over_limit );
 
-    $obj->{current} += length $buf;
+    $obj->{current} += CORE::length $buf;
     $obj->_check(\$buf)
         if( defined $buf and defined $max_length );
     print $fh $buf;
-    return length $buf;
+    return CORE::length $buf;
 }
 
 sub _check {
@@ -55,7 +56,7 @@ sub _check {
     if( 0 <= $over ){
         $obj->{reached} = 1;
         $obj->is_over_limit;
-        $$ref_buf = substr( $$ref_buf, 0, length($$ref_buf) - $over );
+        $$ref_buf = substr( $$ref_buf, 0, CORE::length($$ref_buf) - $over );
     }
 }
 
@@ -105,7 +106,7 @@ Limit length of stream. Default is undef that means unlimited.
 =head2 sensitive
 
 If it is set true value, then CORE::die when stream reaches limit of length.
-The message of CORE::die is the value.
+The message thrown by CORE::die is the same value.
 
     # when set the true value as scalar
     my $message = "over the limit";
@@ -117,9 +118,9 @@ The message of CORE::die is the value.
         # it read over the limit
     }
 
-This also accepts reference CODE, it will call instead of CORE::die.
+This also accepts a reference to CODE, it will be called instead of CORE::die.
 
-    PerlIO::via::Limit->sensitive(sub { warn "over the limit\n" });
+    PerlIO::via::Limit->sensitive(sub { warn "over the limit\n"; 1; });
 
 Default is false.
 
