@@ -33,7 +33,7 @@ sub FILL {
     return undef if( $obj->is_over_limit );
 
     my $buf = <$fh>;
-    $obj->{current} += CORE::length $buf;
+    $obj->{current} += CORE::length $buf if( defined $buf );
     $obj->_check(\$buf)
         if( defined $buf and defined $max_length );
     return $buf;
