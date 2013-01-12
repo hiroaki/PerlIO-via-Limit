@@ -33,21 +33,25 @@ sub FILL {
     return undef if( $obj->is_over_limit );
 
     my $buf = <$fh>;
-    $obj->{current} += CORE::length $buf if( defined $buf );
-    $obj->_check(\$buf)
-        if( defined $buf and defined $max_length );
+    if( defined $buf ){
+        $obj->{current} += CORE::length $buf;
+        $obj->_check(\$buf) if( defined $max_length );
+    }
     return $buf;
 }
 
 sub WRITE {
     my ($obj, $buf, $fh) = @_;
-    return undef if( $obj->is_over_limit );
+    return 0 if( $obj->is_over_limit );
 
-    $obj->{current} += CORE::length $buf;
-    $obj->_check(\$buf)
-        if( defined $buf and defined $max_length );
-    print $fh $buf;
-    return CORE::length $buf;
+    if( defined $buf ){
+        $obj->{current} += CORE::length $buf;
+        $obj->_check(\$buf) if( defined $max_length );
+        print $fh $buf;
+        return CORE::length $buf;
+    }else{
+        return 0;
+    }
 }
 
 sub _check {
@@ -56,15 +60,15 @@ sub _check {
     if( 0 <= $over ){
         $obj->{reached} = 1;
         $obj->is_over_limit;
-        #$$ref_buf = substr( $$ref_buf, 0, CORE::length($$ref_buf) - $over );
         substr($$ref_buf, -$over, $over, q{});
+        # another expression: $$ref_buf = substr( $$ref_buf, 0, CORE::length($$ref_buf) - $over );
     }
 }
 
 sub is_over_limit {
     my $obj = shift;
     unless( $obj->{reached} ){
-        return 0;    
+        return 0;
     }else{
         if( my $val = $obj->sensitive ){
             return $val->($obj) if( ref($val) eq 'CODE' );
@@ -73,6 +77,7 @@ sub is_over_limit {
         return 1;
     }
 }
+
 
 1;
 __END__
