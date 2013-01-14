@@ -1,7 +1,7 @@
 {
    "abstract" : "unknown",
    "author" : [
-      "unknown"
+      "WATANABE Hiroaki <hwat@cpan.org>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120630",
@@ -32,6 +32,7 @@
       },
       "runtime" : {
          "requires" : {
+            "Exception::Class" : "0",
             "PerlIO::via" : "0",
             "Test::More" : "0.32"
          }

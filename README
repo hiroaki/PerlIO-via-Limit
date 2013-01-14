@@ -22,25 +22,23 @@ CLASS METHODS
     Limit length of stream. Default is undef that means unlimited.
 
   sensitive
-    If it is set true value, then CORE::die when stream reaches limit of
-    length. The message thrown by CORE::die is the same value.
+    If set true value, an exception occurs when stream reaches limit of
+    length. Default is false.
 
-        # when set the true value as scalar
-        my $message = "over the limit";
-        PerlIO::via::Limit->sensitive($message);
+        use PerlIO::via::Limit sensitive => 1;
 
+        open( my $in, "<:via(Limit)", $file ) or die;
         eval {
-            read ...
-        };if( $@ and $@ eq $message ){
-            # it read over the limit
+            while( <$in> ){
+                # do something...
+            }
+        };if( $@ ){
+            # "$in is trying to read exceeding the limit."
+            warn "$@";
         }
+        close $in or die;
 
-    This also accepts a reference to CODE, it will be called instead of
-    CORE::die.
-
-        PerlIO::via::Limit->sensitive(sub { warn "over the limit\n"; 1; });
-
-    Default is false.
+    Note that the $@ is a Exception::Class object.
 
 AUTHOR
     WATANABE Hiroaki <hwat@mac.com>
@@ -50,4 +48,6 @@ AUTHOR
 
 SEE ALSO
     PerlIO::via
+
+    Exception::Class
 
