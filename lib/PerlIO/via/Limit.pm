@@ -117,7 +117,7 @@ Limit length of stream. Default is undef that means unlimited.
 
 =head2 sensitive
 
-If set true value, an exception occurs when stream reaches limit of length.
+If set true value, an exception will be occurred when stream reaches limit of length.
 Default is false.
 
     use PerlIO::via::Limit sensitive => 1;
@@ -135,9 +135,14 @@ Default is false.
 
 Note that the $@ is a Exception::Class object.
 
+=head1 BUGS
+
+When the exception is thrown by sensitive option,
+the buffer for reading does not be filled.
+
 =head1 AUTHOR
 
-WATANABE Hiroaki E<lt>hwat@mac.comE<gt>
+WATANABE Hiroaki E<lt>hwat@cpan.orgE<gt>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

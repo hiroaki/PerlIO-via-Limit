@@ -22,8 +22,8 @@ CLASS METHODS
     Limit length of stream. Default is undef that means unlimited.
 
   sensitive
-    If set true value, an exception occurs when stream reaches limit of
-    length. Default is false.
+    If set true value, an exception will be occurred when stream reaches
+    limit of length. Default is false.
 
         use PerlIO::via::Limit sensitive => 1;
 
@@ -40,8 +40,12 @@ CLASS METHODS
 
     Note that the $@ is a Exception::Class object.
 
+BUGS
+    When the exception is thrown by sensitive option, the buffer for reading
+    does not be filled.
+
 AUTHOR
-    WATANABE Hiroaki <hwat@mac.com>
+    WATANABE Hiroaki <hwat@cpan.org>
 
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
