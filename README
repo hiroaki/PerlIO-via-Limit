@@ -44,14 +44,18 @@ BUGS
     When the exception is thrown by sensitive option, the buffer for reading
     does not be filled.
 
+SEE ALSO
+    PerlIO::via
+
+    Exception::Class
+
+REPOSITORY
+    PerlIO::via::Limit is hosted on github
+    <https://github.com/hiroaki/PerlIO-via-Limit>
+
 AUTHOR
     WATANABE Hiroaki <hwat@cpan.org>
 
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
-
-SEE ALSO
-    PerlIO::via
-
-    Exception::Class
 

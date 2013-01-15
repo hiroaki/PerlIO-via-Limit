@@ -140,17 +140,21 @@ Note that the $@ is a Exception::Class object.
 When the exception is thrown by sensitive option,
 the buffer for reading does not be filled.
 
+=head1 SEE ALSO
+
+L<PerlIO::via>
+
+L<Exception::Class>
+
+=head1 REPOSITORY
+
+PerlIO::via::Limit is hosted on github L<https://github.com/hiroaki/PerlIO-via-Limit>
+
 =head1 AUTHOR
 
 WATANABE Hiroaki E<lt>hwat@cpan.orgE<gt>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=head1 SEE ALSO
-
-L<PerlIO::via>
-
-L<Exception::Class>
 
 =cut
