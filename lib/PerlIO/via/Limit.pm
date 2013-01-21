@@ -3,7 +3,7 @@ package PerlIO::via::Limit;
 use strict;
 use warnings;
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use Exception::Class ('PerlIO::via::Limit::Exception');
 

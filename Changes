@@ -1,4 +1,5 @@
-Revision history for Perl extension PerlIO::via::Limit
+0.02  2013-01-21
+  - Fixed Windows bugs in tests.
 
-0.01  Thu Jan 10 00:00:00 2013
-    - original version
+0.01  2013-01-10
+  - First release.
