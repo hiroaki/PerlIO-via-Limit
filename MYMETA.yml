@@ -18,7 +18,8 @@ no_index:
     - t
     - inc
 requires:
+  Class::Data::Inheritable: 0
   Exception::Class: 0
   PerlIO::via: 0
   Test::More: 0.32
-version: 0.02
+version: 0.03

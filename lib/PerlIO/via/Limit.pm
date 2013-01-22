@@ -3,26 +3,19 @@ package PerlIO::via::Limit;
 use strict;
 use warnings;
 use vars qw($VERSION);
-$VERSION = '0.02';
+$VERSION = '0.03';
+
+our @ISA;
+unshift @ISA, qw(Class::Data::Inheritable);
 
 use Exception::Class ('PerlIO::via::Limit::Exception');
 
-my $max_length  = undef;
-my $sensitive   = undef;
+__PACKAGE__->mk_classdata('length');
+__PACKAGE__->mk_classdata('sensitive');
 
 sub import {
     my ($class, %params) = @_;
     $class->$_( $params{$_} ) for keys %params;
-}
-
-sub length {
-    my $class = shift;
-    return @_ ? $max_length = shift : $max_length;
-}
-
-sub sensitive {
-    my $class = shift;
-    return @_ ? $sensitive = shift : $sensitive;
 }
 
 sub PUSHED {
@@ -41,7 +34,6 @@ sub FILL {
         return undef;
     }
 
-    my $pos = tell $fh;
     my $buf = <$fh>;
 
     if( defined $buf ){
@@ -73,8 +65,8 @@ sub WRITE {
 
 sub _check {
     my ($obj, $ref_buf) = @_;
-    if( defined $max_length ){
-        my $over = $obj->{current} - $max_length;
+    if( defined(my $len = $obj->length) ){
+        my $over = $obj->{current} - $len;
         if( 0 <= $over ){
             $obj->{reached} = 1;
             substr($$ref_buf, $over * -1, $over, q{});

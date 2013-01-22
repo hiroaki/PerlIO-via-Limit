@@ -8,5 +8,6 @@ WriteMakefile(
         'Test::More'        => '0.32',
         'PerlIO::via'       => '0',
         'Exception::Class'  => '0',
+        'Class::Data::Inheritable' => '0',
     },
 );
