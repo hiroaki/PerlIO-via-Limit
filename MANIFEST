@@ -8,6 +8,7 @@ README
 t/00_compile.t
 t/10_length.t
 t/10_sensitive.t
+t/15_create.t
 t/20_read_file.t
 t/20_read_file.txt
 t/30_write_file.t

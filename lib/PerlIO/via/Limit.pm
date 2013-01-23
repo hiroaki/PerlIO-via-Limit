@@ -18,6 +18,20 @@ sub import {
     $class->$_( $params{$_} ) for keys %params;
 }
 
+my $create_count = 0;
+sub create {
+    my ($class, $len, $new_class) = @_;
+
+    $new_class = sprintf('%s::_%s', __PACKAGE__, ++$create_count)
+        unless( $new_class );
+
+    no strict 'refs';
+    @{"$new_class\::ISA"} = __PACKAGE__;
+
+    $new_class->length($len);
+    return $new_class;
+}
+
 sub PUSHED {
     my ($class, $mode, $fh) = @_;
     return bless {current => 0, reached => 0}, $class;
@@ -103,6 +117,40 @@ PerlIO::via::Limit implements a PerlIO layer that restricts length of stream.
 
 =head1 CLASS METHODS
 
+=head2 create
+
+Create an anonymous class that is inheritable L<PerlIO::via::Limit>.
+
+In order to use two or more limit values, we have to split namespace.
+
+    # It does not work as expected. 
+
+    PerlIO::via::Limit->length(256);
+    open( my $fh1, "<:via(Limit)", $file1 );
+
+    PerlIO::via::Limit->length(100);
+    open( my $fh2, "<:via(Limit)", $file2 );
+
+    local $/ = undef;
+    my $data1 = <$fh1>; 
+    my $data2 = <$fh2>; 
+
+    CORE::length($data1); # is not 256 but 100
+    CORE::length($data2); # is also 100
+
+This method supports it by easy way.
+
+    my $limit256 = PerlIO::via::Limit->create(256);
+    my $limit100 = PerlIO::via::Limit->create;
+
+    $limit256->sensitive(1);
+    $limit100->length(100);
+
+    open( my $fh1, "<:via($limit256)", $file1 );
+    open( my $fh2, "<:via($limit100)", $file2 );
+
+It also accepts an optional parameter for 'length' available.
+
 =head2 length
 
 Limit length of stream. Default is undef that means unlimited.
@@ -125,7 +173,7 @@ Default is false.
     }
     close $in or die;
 
-Note that the $@ is a Exception::Class object.
+Note that the $@ is an Exception::Class object.
 
 =head1 BUGS
 
