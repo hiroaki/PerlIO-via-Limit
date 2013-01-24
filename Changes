@@ -1,3 +1,6 @@
+0.03  2013-01-25
+  - Add create() factory method.
+
 0.02  2013-01-21
   - Fixed Windows bugs in tests.
 

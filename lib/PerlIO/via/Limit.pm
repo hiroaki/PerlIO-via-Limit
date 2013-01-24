@@ -23,7 +23,7 @@ sub create {
     my ($class, $len, $new_class) = @_;
 
     $new_class = sprintf('%s::_%s', __PACKAGE__, ++$create_count)
-        unless( $new_class );
+        unless( defined $new_class );
 
     no strict 'refs';
     @{"$new_class\::ISA"} = __PACKAGE__;
@@ -94,6 +94,7 @@ sub _check {
 1;
 __END__
 
+
 =head1 NAME
 
 PerlIO::via::Limit - PerlIO layer for length restrictions
@@ -101,9 +102,9 @@ PerlIO::via::Limit - PerlIO layer for length restrictions
 =head1 SYNOPSIS
 
     use PerlIO::via::Limit;
-    PerlIO::via::Limit->length(20);
+    PerlIO::via::Limit->length(256);
     # - or -
-    use PerlIO::via::Limit length => 20;
+    use PerlIO::via::Limit length => 256;
 
     # reading
     open( my $fh, "<:via(Limit)", $file );
@@ -111,9 +112,63 @@ PerlIO::via::Limit - PerlIO layer for length restrictions
     # writing
     open( my $fh, ">:via(Limit)", $file );
 
+    # If you want to use various limits simultaneously
+    my $limit256 = PerlIO::via::Limit->create(256);
+    my $limit512 = PerlIO::via::Limit->create(512);
+    open( my $fh256, "<:via($limit256)", $hoge );
+    open( my $fh512, ">:via($limit512)", $fuga );
+
 =head1 DESCRIPTION
 
 PerlIO::via::Limit implements a PerlIO layer that restricts length of stream.
+
+There is an important constraint, 
+it is able to specify only one limit value within application 
+because the 'length' is a class data.
+
+The following example does not work as expected:
+
+    PerlIO::via::Limit->length(256);
+    open( my $fh1, "<:via(Limit)", $file1 );
+
+    PerlIO::via::Limit->length(512);
+    open( my $fh2, "<:via(Limit)", $file2 );
+
+    local $/ = undef;
+    my $data1 = <$fh1>; 
+    my $data2 = <$fh2>; 
+
+    CORE::length($data1); # is not 256 but 512
+    CORE::length($data2); # is also 512
+
+Therefore, it is necessary to divide namespace,
+in order to use two or more limit values simultaneously.
+
+    package Foo;
+    use base PerlIO::via::Limit;
+    
+    package main;
+    PerlIO::via::Limit->length(256);
+    Foo->length(512);
+
+    open( my $fh1, "<:via(Limit)", $file1 );
+    open( my $fh2, "<:via(Foo)", $file2 );
+
+    local $/ = undef;
+    my $data1 = <$fh1>; 
+    my $data2 = <$fh2>; 
+
+    CORE::length($data1); # is 256
+    CORE::length($data2); # is 512
+
+Actually you do not have to code like the above,
+instead, the create() method supports it by simple interface.
+
+    my $limit256 = PerlIO::via::Limit->create(256);
+    my $limit512 = PerlIO::via::Limit->create(512);
+
+    open( my $fh1, "<:via($limit256)", $file1 );
+    open( my $fh2, "<:via($limit100)", $file2 );
 
 =head1 CLASS METHODS
 
@@ -121,39 +176,24 @@ PerlIO::via::Limit implements a PerlIO layer that restricts length of stream.
 
 Create an anonymous class that is inheritable L<PerlIO::via::Limit>.
 
-In order to use two or more limit values, we have to split namespace.
+You do not have to care about the class, only pass ':via' the returned value as it is.
 
-    # It does not work as expected. 
+It accepts an optional parameter for 'length' available.
+    
+    my $limit = PerlIO::via::Limit->create(512);
+    open( my $fh, ">:via($limit)", $file );
 
-    PerlIO::via::Limit->length(256);
-    open( my $fh1, "<:via(Limit)", $file1 );
+Also it can call 'length' and 'sensitive' class methods.
 
-    PerlIO::via::Limit->length(100);
-    open( my $fh2, "<:via(Limit)", $file2 );
-
-    local $/ = undef;
-    my $data1 = <$fh1>; 
-    my $data2 = <$fh2>; 
-
-    CORE::length($data1); # is not 256 but 100
-    CORE::length($data2); # is also 100
-
-This method supports it by easy way.
-
-    my $limit256 = PerlIO::via::Limit->create(256);
-    my $limit100 = PerlIO::via::Limit->create;
-
-    $limit256->sensitive(1);
-    $limit100->length(100);
-
-    open( my $fh1, "<:via($limit256)", $file1 );
-    open( my $fh2, "<:via($limit100)", $file2 );
-
-It also accepts an optional parameter for 'length' available.
+    my $limit = PerlIO::via::Limit->create;
+    $limit->length(256);
+    $limit->sensitive(0);
+    open( my $fh, ">:via($limit)", $file );
 
 =head2 length
 
-Limit length of stream. Default is undef that means unlimited.
+Limit length of stream.
+Default is undef that means unlimited.
 
 =head2 sensitive
 
@@ -180,19 +220,21 @@ Note that the $@ is an Exception::Class object.
 When the exception is thrown by sensitive option,
 the buffer for reading does not be filled.
 
+=head1 REPOSITORY
+
+PerlIO::via::Limit is hosted on github L<https://github.com/hiroaki/PerlIO-via-Limit>
+
 =head1 SEE ALSO
 
 L<PerlIO::via>
 
 L<Exception::Class>
 
-=head1 REPOSITORY
-
-PerlIO::via::Limit is hosted on github L<https://github.com/hiroaki/PerlIO-via-Limit>
-
 =head1 AUTHOR
 
 WATANABE Hiroaki E<lt>hwat@cpan.orgE<gt>
+
+=head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
