@@ -1,10 +1,10 @@
 {
-   "abstract" : "unknown",
+   "abstract" : "PerlIO layer for length restrictions",
    "author" : [
       "WATANABE Hiroaki <hwat@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120630",
+   "generated_by" : "Dist::Milla version v1.0.5, Dist::Zilla version 5.019, CPAN::Meta::Converter version 2.141170",
    "license" : [
       "perl_5"
    ],
@@ -16,7 +16,11 @@
    "no_index" : {
       "directory" : [
          "t",
-         "inc"
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples"
       ]
    },
    "prereqs" : {
@@ -27,7 +31,7 @@
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : "6.30"
          }
       },
       "runtime" : {
@@ -40,5 +44,20 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.03"
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/hiroaki/PerlIO-via-Limit/issues"
+      },
+      "homepage" : "https://github.com/hiroaki/PerlIO-via-Limit",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/hiroaki/PerlIO-via-Limit.git",
+         "web" : "https://github.com/hiroaki/PerlIO-via-Limit"
+      }
+   },
+   "version" : "0.03",
+   "x_contributors" : [
+      "WATANABE Hiroaki <hwat@mac.com>"
+   ]
 }
+
