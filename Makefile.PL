@@ -28,7 +28,7 @@ my %WriteMakefileArgs = (
     "PerlIO::via" => 0,
     "Test::More" => "0.32"
   },
-  "VERSION" => "0.03",
+  "VERSION" => "0.04",
   "test" => {
     "TESTS" => "t/*.t"
   }
